@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Vanilla</title>
+</head>
+<body>
+    <div id="contenedor">
+        <h1 id="bienvenida">Bienvenido pulta Control + F10 o espera 5 segundos</h1>
+        
+    </div>
+    <script src="./js/sesion.js">
+        let promesa = new Promise((resolver, rechazar)=>{
+
+            let timeout = setTimeout(()=>{
+
+                let contenedor = document.getElementById('contenedor');
+                let bienvenida = document.getElementById('bienvenida');
+
+                if (bienvenida != null) {
+                    contenedor.removeChild(bienvenida);
+                    resolver(contenedor);
+                } else {
+                    rechazar('El formulario ya ha sido cargado');
+                }
+
+            },5000);
+        });
+
+        promesa.then((contenedor)=>{
+            printFormUser(contenedor);
+        });
+
+        document.addEventListener('keydown', (event)=>{
+            let bienvenida = document.getElementById('bienvenida');
+
+            if (bienvenida != null && event.ctrlKey && event.keyCode === 121) {
+                let contenedor = document.getElementById('contenedor');
+                contenedor.removeChild(bienvenida);
+                printFormUser(contenedor);
+            }
+        });
+
+        function printFormUser(contenedor) {
+
+            let label = document.createElement('label');
+            label.setAttribute('for', 'userEmail');
+            label.innerText = 'Usuario: ';
+
+            let inputEmail = document.createElement('input');
+            inputEmail.setAttribute('type', 'text');
+            inputEmail.setAttribute('name', 'userEmail');
+            inputEmail.setAttribute('id', 'userEmail');
+            inputEmail.setAttribute('placeholder', 'introduce tu email');
+
+            let msgError = document.createElement('small');
+            msgError.setAttribute('id','mensajeError');
+
+            contenedor.appendChild(label);
+            contenedor.appendChild(inputEmail);
+            contenedor.appendChild(msgError);
+
+            inputEmail.addEventListener('blur', (event) => {
+                
+                let email = inputEmail.value;
+
+                if (email == '' || (email != '' && !(/[\w\W]+@[\w\W]+\.[\w\W]+/.test(email)))) {
+                    inputEmail.focus();
+                    msgError.innerHTML = 'El correo electrónico introducido es incorrecto, formato: catacteres@caracteres.caracteres'
+                } else {
+
+                    let nameCookieDate = 'lastDate';
+                    let nameCookieUser = 'user';
+                    let ultimaVisita = getCookie(nameCookieDate);
+
+                    if (ultimaVisita == '') {
+
+                        let date = new Date();
+
+                        setCookie(nameCookieDate, formatDateAndTime(date), 30);
+                    } 
+
+                    // cname, cvalue, exdays
+                    setCookie(nameCookieUser, email, 30);
+                    window.location.href = './info.html';
+                }
+            });
+
+        }
+
+        function formatDateAndTime(date) {
+
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = date.getFullYear();
+    
+            let hours = String(date.getHours()).padStart(2, '0');
+            let minutes = String(date.getMinutes()).padStart(2, '0');
+            let seconds = String(date.getSeconds()).padStart(2, '0');
+
+            return day + '/' + month + '/' + year + ' a las ' + hours + ':' + minutes + ':' + seconds;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Vanilla Francisco J Carrasco</title>
+</head>
+<body>
+    <div id="contenedor">
+        <p id="infoUser"></p>
+        <button type="button">Preguntas</button>
+    </div>
+    <script src="./js/sesion.js">
+
+        let nameCookieDate = 'lastDate';
+        let nameCookieUser = 'user';
+        let ultimaVisita = getCookie(nameCookieDate);
+        let user = getCookie(nameCookieUser);
+
+        document.getElementById('infoUser').innerHTML = 'Hola '+user+'<br>La última vez que entraste fu el ' + ultimaVisita;
+
+    </script>
+
+    </script>
+</body>
+</html>
