@@ -133,7 +133,7 @@
             resetForm();
             printAsk(ask, responde, score, true);
 
-            document.getElementById('backButton').removeAttribute('disabled');
+            
         }
 
         function createQuestionCookie(ask, responde, score) {
@@ -169,7 +169,9 @@
                 statusColumn.innerHTML = '<p>cargando...</p>';
                 setInterval(()=>{
                     statusColumn.innerHTML = '<p>OK</p>';
+                    document.getElementById('backButton').removeAttribute('disabled');
                 }, 5000);
+
             } else {
                 statusColumn.innerHTML = '<p>OK</p>';
             }
@@ -206,7 +208,7 @@
          * Puede devolver null
          */
         function getRadioButtonsValue(nameRadioGroup) {
-            return document.querySelector('input[name="'+ nameRadioGroup +'"]:checked').value;
+            return document.querySelector('input[name="'+ nameRadioGroup +'"]:checked') == null? null: document.querySelector('input[name="'+ nameRadioGroup +'"]:checked').value;
         }
 
         String.prototype.isEmpty = function () {
