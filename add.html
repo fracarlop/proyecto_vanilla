@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/custom.css">
+    <title>Proyecto Vanilla Francisco J Carrasco</title>
+</head>
+<body>
+    <div id="contenedor" class="container">
+        <div class="row marginTop"></div>
+        <div class="row">
+            <div class="col-4 border">
+                <fieldset>
+                    <legend>Escribe la pregunta</legend>
+                    <div class="mb-3">
+                        <label for="ask" class="form-label">Pregunta</label>
+                        <textarea class="form-control" id="ask" rows="3"></textarea>
+                      </div>
+                </fieldset>
+                
+                <fieldset>
+                    <legend>Selecciona la respuesta</legend>
+                    <div class="form-check">
+                        <input type="radio" id="respondeTrue" class="form-check-input" name="responde"/>
+                        <label class="form-check-label" for="respondeTrue">Verdadero</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="respondeFalse" class="form-check-input" name="responde"/>
+                        <label class="form-check-label" for="respondeFalse">Falso</label>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Puntuación</legend>
+                    <div class="mb-3">
+                        <input type="number" class="form-control" id="score" min="0" max="9" pattern="[0-9]+"/>
+                      </div>
+                </fieldset>
+                
+                <button type="button" class="btn btn-primary" onclick="redirect('./info.html')" id="backButton">Atrás</button>
+                <button type="button" class="btn btn-success" disabled id="saveButton" onclick="resetForm()">Grabar</button>
+            </div>
+            <div class="col-8 text-center border">
+                <div id="msgLoad"><h5>Cargango preguntas...</h5></div>
+                <table id="questions"  hidden>
+                    <tr>
+                        <th class="nameColumn"><h5>Pregunta</h5></th>
+                        <th class="nameColumn"><h5>Respuesta</h5></th>
+                        <th class="nameColumn"><h5>Puntuación</h5></th>
+                        <th class="nameColumn"><h5>Estado</h5></th>
+                    </tr>
+                    <tr>
+                        <td class="askColumn"><p>askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn </p></td>
+                        <td><p>Verdadero</p></td>
+                        <td><p>9</p></td>
+                        <td><p>OK</p></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+    <script src="./js/sesion.js"></script>
+     <script src="./js/utils.js"></script>
+     <script>
+
+        var cookieSeparator = '#_#';
+
+        loadQuestions(true);
+
+        let ask = document.getElementById('ask');
+        let respondeFalse = document.getElementById('respondeFalse');
+        let respondeTrue = document.getElementById('respondeTrue');
+        let score = document.getElementById('score');
+
+        ask.addEventListener('blur', (event)=>{
+            activateSaveButton()
+        });
+
+        respondeFalse.addEventListener('blur', (event)=>{
+            activateSaveButton()
+        });
+
+        respondeTrue.addEventListener('blur', (event)=>{
+            activateSaveButton()
+        });
+
+        score.addEventListener('blur', (event)=>{
+            activateSaveButton()
+        });
+
+        function loadQuestions(delay = false) {
+
+            let promesa = new Promise((resolver, rechazar)=>{
+
+                if (delay) {
+
+                    let interval = setInterval(()=>{
+                        resolver('Mostrar preguntas');
+                    },5000)
+                } else {
+                    resolver('Mostrar preguntas');
+                }
+                
+            });
+
+            promesa.then((msg)=>{
+                let msgLoad = document.getElementById('msgLoad');
+                let questions = document.getElementById('questions');
+                msgLoad.hidden = true;
+                questions.hidden = false;
+            });
+        }
+
+        function saveQuestion() {
+            
+            let ask = getTextInputValue('ask');
+            let responde = getRadioButtonsValue('responde');
+            let score = getTextInputValue('score')
+
+            createQuestionCookie(ask, responde, score);
+
+        }
+
+        function createQuestionCookie(ask, responde, score) {
+
+            let cookieValue = ask + cookieSeparator + responde + cookieSeparator + score;
+            let user = getCookie('user');
+            let askNumber = Number.parseInt(getCookie('askNumber-' + user));
+
+            setCookie();
+             
+        }
+
+        async function name(params) {
+            
+        }
+
+        function activateSaveButton() {
+            if (validateForm()) {
+                document.getElementById('saveButton').removeAttribute('disabled');
+            } else {
+                document.getElementById('saveButton').setAttribute('disabled', 'true');
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('saveButton').setAttribute('disabled', 'true');
+            document.getElementById('score').value = '';
+            document.getElementById('ask').value = '';
+            document.getElementById('respondeTrue').checked = false;
+            document.getElementById('respondeFalse').checked = false;
+        }
+
+        function validateForm() {
+
+            if (getTextInputValue('ask').isEmpty() || getTextInputValue('score').isEmpty() || getRadioButtonsValue('responde').isEmpty()) return false;
+            else return true;
+        }
+
+        function getTextInputValue(id) {
+            return document.getElementById(id).value;
+        }
+
+        /**
+         * Puede devolver null
+         */
+        function getRadioButtonsValue(nameRadioGroup) {
+            return document.querySelector('input[name="'+ nameRadioGroup +'"]:checked').value;
+        }
+
+        String.prototype.isEmpty = function () {
+            return this === null || this.trim() === '';
+        }
+
+     </script>
+</body>
+</html>
