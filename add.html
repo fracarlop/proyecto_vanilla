@@ -50,12 +50,6 @@
                         <th class="nameColumn"><h5>Puntuación</h5></th>
                         <th class="nameColumn"><h5>Estado</h5></th>
                     </tr>
-                    <!--<tr>
-                        <td class="askColumn"><p>askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn </p></td>
-                        <td><p>Verdadero</p></td>
-                        <td><p>9</p></td>
-                        <td><p>OK</p></td>
-                    </tr>-->
                 </table>
             </div>
         </div>
@@ -133,9 +127,13 @@
             let responde = getRadioButtonsValue('responde');
             let score = getTextInputValue('score')
 
+            document.getElementById('backButton').setAttribute('disabled', 'true');
+
             createQuestionCookie(ask, responde, score);
             resetForm();
             printAsk(ask, responde, score, true);
+
+            document.getElementById('backButton').removeAttribute('disabled');
         }
 
         function createQuestionCookie(ask, responde, score) {
