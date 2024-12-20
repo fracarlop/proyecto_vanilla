@@ -23,11 +23,11 @@
                 <fieldset>
                     <legend>Selecciona la respuesta</legend>
                     <div class="form-check">
-                        <input type="radio" id="respondeTrue" class="form-check-input" name="responde"/>
+                        <input type="radio" id="respondeTrue" class="form-check-input" name="responde" value="Verdadero"/>
                         <label class="form-check-label" for="respondeTrue">Verdadero</label>
                     </div>
                     <div class="form-check">
-                        <input type="radio" id="respondeFalse" class="form-check-input" name="responde"/>
+                        <input type="radio" id="respondeFalse" class="form-check-input" name="responde" value="Falso"/>
                         <label class="form-check-label" for="respondeFalse">Falso</label>
                     </div>
                 </fieldset>
@@ -39,7 +39,7 @@
                 </fieldset>
                 
                 <button type="button" class="btn btn-primary" onclick="redirect('./info.html')" id="backButton">Atrás</button>
-                <button type="button" class="btn btn-success" disabled id="saveButton" onclick="resetForm()">Grabar</button>
+                <button type="button" class="btn btn-success" disabled id="saveButton" onclick="saveQuestion()">Grabar</button>
             </div>
             <div class="col-8 text-center border">
                 <div id="msgLoad"><h5>Cargango preguntas...</h5></div>
@@ -50,12 +50,12 @@
                         <th class="nameColumn"><h5>Puntuación</h5></th>
                         <th class="nameColumn"><h5>Estado</h5></th>
                     </tr>
-                    <tr>
+                    <!--<tr>
                         <td class="askColumn"><p>askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn askColumn </p></td>
                         <td><p>Verdadero</p></td>
                         <td><p>9</p></td>
                         <td><p>OK</p></td>
-                    </tr>
+                    </tr>-->
                 </table>
             </div>
         </div>
@@ -92,6 +92,8 @@
 
         function loadQuestions(delay = false) {
 
+            getQuestions();
+
             let promesa = new Promise((resolver, rechazar)=>{
 
                 if (delay) {
@@ -113,6 +115,18 @@
             });
         }
 
+        function getQuestions() {
+            let user = getCookie('user');
+            let nameAskNumberCookie = 'askNumber-' + user;
+            let askNumber = Number.parseInt(getCookie(nameAskNumberCookie));
+
+            for (let index = 1; index <= askNumber; index++) {
+                let data = getCookie('ask-' + index + '-' + user).split(cookieSeparator);
+                printAsk(data[0], data[1], data[2],false)
+                
+            }
+        }
+
         function saveQuestion() {
             
             let ask = getTextInputValue('ask');
@@ -120,7 +134,8 @@
             let score = getTextInputValue('score')
 
             createQuestionCookie(ask, responde, score);
-
+            resetForm();
+            printAsk(ask, responde, score, true);
         }
 
         function createQuestionCookie(ask, responde, score) {
@@ -128,13 +143,39 @@
             let cookieValue = ask + cookieSeparator + responde + cookieSeparator + score;
             let user = getCookie('user');
             let askNumber = Number.parseInt(getCookie('askNumber-' + user));
-
-            setCookie();
-             
+            askNumber ++;
+            let nameCookie = 'ask-' + askNumber + '-' + user;
+            setCookie(nameCookie, cookieValue, 30);
+            setCookie('askNumber-' + user, askNumber, 30);
         }
 
-        async function name(params) {
-            
+        async function printAsk(ask, responde, score, isDelay) {
+            let table = document.getElementById('questions');
+            let row = document.createElement('tr');
+            let askColumn = document.createElement('td');
+            askColumn.setAttribute('class', 'askColumn');
+            askColumn.innerHTML = '<p>' + ask + '</p>';
+            let respondeColumn = document.createElement('td');
+            respondeColumn.innerHTML = '<p>' + responde + '</p>';
+            let scoreColumn = document.createElement('td');
+            scoreColumn.innerHTML = '<p>' + score + '</p>';
+            let statusColumn = document.createElement('td');
+
+            row.appendChild(askColumn);
+            row.appendChild(respondeColumn);
+            row.appendChild(scoreColumn);
+            row.appendChild(statusColumn);
+            table.appendChild(row);
+
+            if (isDelay) {
+                statusColumn.innerHTML = '<p>cargando...</p>';
+                setInterval(()=>{
+                    statusColumn.innerHTML = '<p>OK</p>';
+                }, 5000);
+            } else {
+                statusColumn.innerHTML = '<p>OK</p>';
+            }
+           
         }
 
         function activateSaveButton() {
